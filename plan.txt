@@ -1,1 +1,13 @@
 this is our plan.
+
+
+Tasks:
+- Mayez + Nikki start coding
+- Richard, James, Tara start reading
+
+
+Before week 9 workshop:
+- Some background reading of the literature to establish if there are already ways towards modelling your problem.
+- Implement the basic model given to you numerically.
+- Can the model treat roads with variable speed limits?
+- If so, what does it tell us about the formation of traffic jams in regions where speed limits change?
