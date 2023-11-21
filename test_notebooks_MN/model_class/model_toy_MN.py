@@ -11,7 +11,6 @@ class TrafficSimulation:
     # Method run when initialising the class.
     def __init__(self, road_length, density, car_slow_down_prob):
         # set the model on the data given
-        '''edit: Should we maybe be having the maximum velocity as a variable here instead of setting it'''
         self.road_length = road_length
         self.density = density
         self.car_slow_down_prob = car_slow_down_prob
@@ -34,7 +33,7 @@ class TrafficSimulation:
         self.roads.reset()    # make the class
         self.roads.update(new_position_and_speed) 
 
-    '''edit: the definition of laps should be clear. maybe discuss it as flow instead?'''
+
     def update_statistics(self, position_speed):
         # Method to update data about the model regarding laps and speeds 
         self.data_speeds_histogram = { }                # Clear old data 
@@ -55,6 +54,9 @@ class TrafficSimulation:
 
     def print_speed_limits(self): 
         self.roads.print_road_header() 
+    
+    def print_heat(self):
+        self.roads.heat_output() # here
 
 
     ### Test cases to verify models behaviour 
@@ -108,10 +110,7 @@ class Roads:
         self.length = road_length 
         self.number_of_cars = number_of_cars
         self.car_slow_down_prob = car_slow_down_prob
-        
-        '''edit: SPEED LIMIT IS SET HERE'''
         road_speed_limit =  5 
-        
         self.roads = [Road(road_speed_limit) for _ in range(road_length)] 
 
 
@@ -156,6 +155,10 @@ class Roads:
     def print_roads(self):
         road_speeds = [road.car.speed if road.car else road.empty_road_char for road in self.roads]
         print(" ".join("{:<1}".format(speed) for speed in road_speeds))
+
+    def heat_output(self): # here
+        road_speeds = [road.car.speed if road.car else road.empty_road_char for road in self.roads]
+        print(type(road_speeds))
 
 ###### End of Class Roads
 
