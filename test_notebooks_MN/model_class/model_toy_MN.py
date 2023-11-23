@@ -9,16 +9,16 @@ class TrafficSimulation:
     # Class to handle the running of the model
     
     # Method run when initialising the class.
-    def __init__(self, road_length, density, car_slow_down_prob):
+    def __init__(self, road_length, density, car_slow_down_prob, road_speed_limit):
         # set the model on the data given
-        '''edit: Should we maybe be having the maximum velocity as a variable here instead of setting it'''
         self.road_length = road_length
         self.density = density
         self.car_slow_down_prob = car_slow_down_prob
+        self.road_speed_limit = road_speed_limit # edit: we've added this as a variable
 
         # Compute number of car in model
         self.number_of_cars = int(road_length * density )
-        self.roads = Roads(road_length, self.number_of_cars, self.car_slow_down_prob)    # make the class
+        self.roads = Roads(road_length, self.number_of_cars, self.car_slow_down_prob, road_speed_limit)    # make the class
         self.roads.initialise_roads() 
 
         ## Model data for statistics 
@@ -34,7 +34,7 @@ class TrafficSimulation:
         self.roads.reset()    # make the class
         self.roads.update(new_position_and_speed) 
 
-    '''edit: the definition of laps should be clear. maybe discuss it as flow instead?'''
+
     def update_statistics(self, position_speed):
         # Method to update data about the model regarding laps and speeds 
         self.data_speeds_histogram = { }                # Clear old data 
@@ -55,12 +55,17 @@ class TrafficSimulation:
 
     def print_speed_limits(self): 
         self.roads.print_road_header() 
+    
+    def get_heatmap(self):
+        heatmap_list = [ road.empty_road_char if road.is_empty() else road.car.speed for road in self.roads.roads ]
+        return heatmap_list
+        
 
 
     ### Test cases to verify models behaviour 
     # Test One
     ## Acceleration 
-    def test_simple_acceleration(self,slow_down_prob):
+    def test_simple_acceleration(self,slow_down_prob, road_speed_limit = 5):
         ### set paras for model
         road_length = 50 
         number_of_cars = 1 
@@ -68,8 +73,9 @@ class TrafficSimulation:
         self.road_length = road_length 
         self.number_of_cars = number_of_cars 
         self.car_slow_down_prob = slow_down_prob 
+        self.road_speed_limit = road_speed_limit # edit: we've added this as a variable
         ###
-        self.roads = Roads(road_length, number_of_cars, slow_down_prob) 
+        self.roads = Roads(road_length, number_of_cars, slow_down_prob, road_speed_limit) 
         self.roads.roads[0].add_car(starting_speed, slow_down_prob) 
     
     # Test two 
@@ -79,7 +85,7 @@ class TrafficSimulation:
         self.number_of_cars = 2 
         self.car_slow_down_prob = 0 
         ##
-        self.roads = Roads(self.road_length, self.number_of_cars, self.car_slow_down_prob) 
+        self.roads = Roads(self.road_length, self.number_of_cars, self.car_slow_down_prob, self.road_speed_limit) 
         self.roads.roads[0].add_car(starting_speed, self.car_slow_down_prob) # Add the moving car 
         self.roads.roads[stationary_position].add_car(0, 1) # Add the stationary car 
         
@@ -89,7 +95,7 @@ class TrafficSimulation:
         self.road_length = 60 
         self.number_of_cars = 1
         self.car_slow_down_prob = 0 
-        self.roads = Roads(self.road_length, self.number_of_cars, self.car_slow_down_prob) 
+        self.roads = Roads(self.road_length, self.number_of_cars, self.car_slow_down_prob, self.road_speed_limit) 
         for i in range(self.road_length):
             if i > 10:
                 self.roads.roads[i] = Road(speed_limit_B)
@@ -103,15 +109,12 @@ class TrafficSimulation:
 
 class Roads:
     # A classes that can contain the different types of roads for the model. 
-    def __init__(self, road_length, number_of_cars, car_slow_down_prob):
+    def __init__(self, road_length, number_of_cars, car_slow_down_prob, road_speed_limit):
         ## initialise the road 
         self.length = road_length 
         self.number_of_cars = number_of_cars
         self.car_slow_down_prob = car_slow_down_prob
-        
-        '''edit: SPEED LIMIT IS SET HERE'''
-        road_speed_limit =  5 
-        
+        self.road_speed_limit = road_speed_limit   # edit: we've added this as a variable
         self.roads = [Road(road_speed_limit) for _ in range(road_length)] 
 
 
@@ -156,7 +159,8 @@ class Roads:
     def print_roads(self):
         road_speeds = [road.car.speed if road.car else road.empty_road_char for road in self.roads]
         print(" ".join("{:<1}".format(speed) for speed in road_speeds))
-
+        
+        
 ###### End of Class Roads
 
 class Road: 
