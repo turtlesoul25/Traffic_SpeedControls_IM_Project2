@@ -61,6 +61,14 @@ class TrafficSimulation:
         traffic_light_states = [ road.traffic_light.state if road.is_traffic_light() else road.empty_road_char for road in self.roads.roads ]
         print(" ".join("{:<1}".format(traffic_light_state) for traffic_light_state in traffic_light_states ))
 
+    def get_heatmap(self):
+        heatmap_list = [ road.empty_road_char if road.is_empty() else road.car.speed for road in self.roads.roads ]
+        return heatmap_list
+    
+    def get_traffic_lights(self):
+        traffic_light_states = [ road.traffic_light.state if road.is_traffic_light() else road.empty_road_char for road in self.roads.roads ]
+        return traffic_light_states
+
 
     ### Test cases to verify models behaviour 
     # Test One
@@ -177,7 +185,8 @@ class Roads:
     def print_roads(self):
         road_speeds = [road.car.speed if road.car else road.empty_road_char for road in self.roads]
         print(" ".join("{:<1}".format(speed) for speed in road_speeds))
-
+        
+    
 ###### End of Class Roads
 
 class Road: 
@@ -259,16 +268,18 @@ class Car:
 ###### End of Class car
 
 class Traffic_light:
+    empty_road_char = '-'
     def __init__(self, green_time, red_time, starting_time): 
         self.green_time = green_time 
         self.red_time   = red_time 
         self.time       = starting_time 
         self.state      = 'g' if self.time > self.red_time else 'r' 
+        # self.state      = '-' if self.time > self.red_time else 'r'
 
     def step_time(self): 
         self.time -= 1 
         self.state = 'g' if self.time > self.red_time else 'r' 
-        self.time = self.green_time if self.time == 0 else self.time 
+        self.time = self.green_time if self.time <= 0 else self.time 
 
 ###### End of Class Traffic Light
 

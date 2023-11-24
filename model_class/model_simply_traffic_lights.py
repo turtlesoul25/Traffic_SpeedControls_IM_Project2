@@ -268,7 +268,7 @@ class Traffic_light:
     def step_time(self): 
         self.time -= 1 
         self.state = 'g' if self.time > self.red_time else 'r' 
-        self.time = self.green_time if self.time == 0 else self.time 
+        self.time = self.green_time if self.time == 0 else self.time  # edit: might be better to make this self.time <= 0 in case user inputs starting time as 0?
 
 ###### End of Class Traffic Light
 
