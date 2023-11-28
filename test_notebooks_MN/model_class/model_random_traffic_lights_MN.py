@@ -123,10 +123,13 @@ class Roads:
         self.car_slow_down_prob = car_slow_down_prob
         self.roads = [Road(speed_limit) for speed_limit in road_speed_limit_list] 
 
+    # def initialise_traffic_lights(self,traffic_lights):
+    #     for position, green_time, red_time, starting_time in traffic_lights: 
+    #         self.roads[position].add_traffic_light(green_time, red_time, starting_time) 
+    
     def initialise_traffic_lights(self,traffic_lights):
-        for position, green_time, red_time, starting_time in traffic_lights: 
-            self.roads[position].add_traffic_light(green_time, red_time, starting_time) 
-
+        for position, red_time, starting_time in traffic_lights: 
+            self.roads[position].add_traffic_light(red_time, starting_time)
     
     def time_step_traffic_lights(self): 
         for road in self.roads: 
@@ -228,9 +231,11 @@ class Road:
         else: 
             return False
     
-    def add_traffic_light(self, green_time, red_time, starting_time):
-        self.traffic_light = Traffic_light(green_time, red_time, starting_time)
-
+    # def add_traffic_light(self, green_time, red_time, starting_time):
+    #     self.traffic_light = Traffic_light(green_time, red_time, starting_time)
+        
+    def add_traffic_light(self, red_time, starting_time):
+        self.traffic_light = Traffic_light(red_time, starting_time)
 
     def time_step_traffic_lights(self): 
         self.traffic_light.step_time()
@@ -271,8 +276,8 @@ class Car:
 
 class Traffic_light:
     empty_road_char = '-'
-    def __init__(self, green_time, red_time, starting_time):
-        self.green_time = green_time
+    def __init__(self, red_time, starting_time):
+        self.green_time = red_time + random.randint(5, 30)
         self.red_time   = red_time 
         self.time       = starting_time 
         self.state      = 'g' if self.time > self.red_time else 'r' 
@@ -289,6 +294,7 @@ class Traffic_light:
     def step_time(self): 
         self.time -= 1 
         self.state = 'g' if self.time > self.red_time else 'r'
+        self.green_time = self.red_time + random.randint(5, 30) if self.time <= 0 else self.green_time
         self.time = self.green_time if self.time <= 0 else self.time 
 
 ###### End of Class Traffic Light
