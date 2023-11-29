@@ -65,6 +65,10 @@ class TrafficSimulation:
         heatmap_list = [ road.empty_road_char if road.is_empty() else road.car.speed for road in self.roads.roads ]
         return heatmap_list
     
+    def get_speed_limits(self):
+        road_speed_lims = [ road.speed_limit for road in self.roads.roads ]
+        return road_speed_lims
+    
     def get_traffic_lights(self):
         traffic_light_states = [ road.traffic_light.state if road.is_traffic_light() else road.empty_road_char for road in self.roads.roads ]
         return traffic_light_states
@@ -124,8 +128,8 @@ class Roads:
         self.roads = [Road(speed_limit) for speed_limit in road_speed_limit_list] 
 
     def initialise_traffic_lights(self,traffic_lights):
-        for position, green_time, red_time, starting_time in traffic_lights: 
-            self.roads[position].add_traffic_light(green_time, red_time, starting_time) 
+        for position, green_time, red_time, starting_time, is_random in traffic_lights: 
+            self.roads[position].add_traffic_light(green_time, red_time, starting_time, is_random) 
 
     
     def time_step_traffic_lights(self): 
@@ -228,8 +232,8 @@ class Road:
         else: 
             return False
     
-    def add_traffic_light(self, green_time, red_time, starting_time):
-        self.traffic_light = Traffic_light(green_time, red_time, starting_time)
+    def add_traffic_light(self, green_time, red_time, starting_time, is_random):
+        self.traffic_light = Traffic_light(green_time, red_time, starting_time, is_random)
 
 
     def time_step_traffic_lights(self): 
@@ -270,25 +274,26 @@ class Car:
 ###### End of Class car
 
 class Traffic_light:
-    empty_road_char = '-'
-    def __init__(self, green_time, red_time, starting_time):
-        self.green_time = green_time
+    def __init__(self, green_time, red_time, starting_time, is_random): 
+        self.random  = is_random   ## set bool logic (true/ false) 
+
+        if self.random: # is random 
+            self.green_time = red_time + random.randint(5,30)
+        else:
+            self.green_time = green_time 
+
         self.red_time   = red_time 
         self.time       = starting_time 
         self.state      = 'g' if self.time > self.red_time else 'r' 
-        # self.state      = '-' if self.time > self.red_time else 'r'
-    
-    
-    # def __init__(self, green_time, red_time, starting_time): 
-    #     self.green_time = green_time 
-    #     self.red_time   = red_time 
-    #     self.time       = starting_time 
-    #     self.state      = 'g' if self.time > self.red_time else 'r' 
-    #     # self.state      = '-' if self.time > self.red_time else 'r'
 
     def step_time(self): 
         self.time -= 1 
-        self.state = 'g' if self.time > self.red_time else 'r'
+        self.state = 'g' if self.time > self.red_time else 'r' 
+
+        # random case 
+        if self.random: 
+            self.green_time = self.red_time + random.randint(5,30) if self.time <= 0 else self.green_time 
+
         self.time = self.green_time if self.time <= 0 else self.time 
 
 ###### End of Class Traffic Light
