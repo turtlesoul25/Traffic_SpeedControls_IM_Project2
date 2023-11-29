@@ -116,8 +116,8 @@ class Roads:
         self.roads = [Road(speed_limit) for speed_limit in road_speed_limit_list] 
 
     def initialise_traffic_lights(self,traffic_lights):
-        for position, green_time, red_time, starting_time in traffic_lights: 
-            self.roads[position].add_traffic_light(green_time, red_time, starting_time) 
+        for position, green_time, red_time, starting_time, is_random in traffic_lights: 
+            self.roads[position].add_traffic_light(green_time, red_time, starting_time, is_random) 
     
     def time_step_traffic_lights(self): 
         for road in self.roads: 
@@ -218,8 +218,8 @@ class Road:
         else: 
             return False
     
-    def add_traffic_light(self, green_time, red_time, starting_time):
-        self.traffic_light = Traffic_light(green_time, red_time, starting_time)
+    def add_traffic_light(self, green_time, red_time, starting_time, is_random):
+        self.traffic_light = Traffic_light(green_time, red_time, starting_time, is_random)
 
     def time_step_traffic_lights(self): 
         self.traffic_light.step_time()
@@ -259,8 +259,14 @@ class Car:
 ###### End of Class car
 
 class Traffic_light:
-    def __init__(self, green_time, red_time, starting_time): 
-        self.green_time = green_time 
+    def __init__(self, green_time, red_time, starting_time, is_random): 
+        self.random  = is_random   ## set bool logic (true/ false) 
+
+        if self.random: # is random 
+            self.green_time = red_time + random.randint(5,30)
+        else:
+            self.green_time = green_time 
+
         self.red_time   = red_time 
         self.time       = starting_time 
         self.state      = 'g' if self.time > self.red_time else 'r' 
@@ -268,13 +274,18 @@ class Traffic_light:
     def step_time(self): 
         self.time -= 1 
         self.state = 'g' if self.time > self.red_time else 'r' 
-        self.time = self.green_time if self.time == 0 else self.time  # edit: might be better to make this self.time <= 0 in case user inputs starting time as 0?
+
+        # random case 
+        if self.random: 
+            self.green_time = self.red_time + random.randint(5,30) if self.time <= 0 else self.green_time 
+
+        self.time = self.green_time if self.time <= 0 else self.time  # edit: might be better to make this self.time <= 0 in case user inputs starting time as 0?
 
 ###### End of Class Traffic Light
 
 if __name__ == "__main__":
     road_speed_limit_list = ([8]*10 ) + ([2]*10) #+ ( [3]*2) + ([9]*8)
-    traffic_light_list = [(10,6,3,6), ( 15, 8,3,8)]
+    traffic_light_list = [(5,6,3,6,False), ( 15, 6,3,6, True)] # true for random traffic light( same rules as MN), false for normal
     density = 0.1
     car_slow_down_prob = 0.0
     sim1 = TrafficSimulation(road_speed_limit_list, traffic_light_list, density, car_slow_down_prob) 
