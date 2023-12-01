@@ -278,7 +278,7 @@ class Traffic_light:
         self.random  = is_random   ## set bool logic (true/ false) 
 
         if self.random: # is random 
-            self.green_time = red_time + random.randint(5,30)
+            self.green_time = red_time + random.randint(2, 22)
         else:
             self.green_time = green_time 
 
