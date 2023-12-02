@@ -50,6 +50,23 @@ class TrafficSimulation:
             new_position_and_speed.append( (position, speed, car))  # Append to list for return
 
         return new_position_and_speed
+    
+    def get_step_spi(self):
+        speed_limits = [ road.speed_limit for road in self.roads.roads]
+        # get speed limits
+        car_speeds = [road.car.speed if road.car else road.empty_road_char for road in self.roads.roads]
+       
+        spi = []
+        for i,speed in enumerate(car_speeds):
+            if not isinstance(speed, str): 
+                spi.append( speed/ speed_limits[i]) 
+
+        if not spi:
+            spi =1 
+        else:
+            spi = sum(spi)/len(spi)
+        return spi
+
 
     def print_step(self):
         self.roads.print_roads()
